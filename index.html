@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>LearnDeck</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234169E1'/%3E%3Ctext x='32' y='46' font-family='Arial Black,sans-serif' font-size='38' font-weight='900' fill='white' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --nav-bg: #4169E1;
+  --nav-height: 60px;
+  --sidebar-w: 220px;
+  --accent: #3b82f6;
+  --accent-light: #eff6ff;
+  --accent-dark: #1d4ed8;
+  --green: #16a34a;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --muted: #64748b;
+  --bg: #f8fafc;
+  --white: #ffffff;
+  --card-radius: 16px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+
+/* ── TOP NAV ── */
+.topnav {
+  position:sticky; top:0; z-index:200;
+  background:var(--nav-bg);
+  height:var(--nav-height);
+  display:flex; align-items:center;
+  padding:0 22px; gap:14px;
+  box-shadow:0 1px 0 rgba(255,255,255,0.06), 0 4px 20px rgba(0,0,0,0.3);
+}
+.nav-brand {
+  display:flex; align-items:center; gap:10px; flex-shrink:0;
+}
+.nav-brand-name {
+  color:#fff; font-size:1rem; font-weight:800;
+  letter-spacing:-0.3px;
+}
+.nav-brand-name span { color:#93c5fd; }
+.logo-mark {
+  width:36px; height:36px;
+  background:linear-gradient(135deg,#3b82f6,#1d4ed8);
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.25rem; font-weight:900; color:#fff;
+  flex-shrink:0;
+  box-shadow:0 2px 8px rgba(59,130,246,0.45);
+  letter-spacing:-1px;
+}
+.school-label {
+  color:rgba(255,255,255,0.5);
+  font-size:0.78rem; font-weight:600;
+  border-left:1px solid rgba(255,255,255,0.15);
+  padding-left:14px; margin-left:2px;
+  white-space:nowrap;
+}
+.nav-spacer { flex:1; }
+.search-box {
+  display:flex; align-items:center; gap:8px;
+  background:rgba(255,255,255,0.09);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:10px;
+  padding:8px 14px;
+  transition:background 0.15s, border-color 0.15s;
+}
+.search-box:focus-within {
+  background:rgba(255,255,255,0.15);
+  border-color:rgba(255,255,255,0.3);
+}
+.search-box input {
+  background:none; border:none; outline:none;
+  color:#fff; font-family:inherit; font-size:0.84rem;
+  width:190px;
+}
+.search-box input::placeholder { color:rgba(255,255,255,0.4); }
+.hamburger {
+  display:none;
+  background:none; border:none; cursor:pointer;
+  color:#fff; font-size:1.4rem; padding:4px;
+}
+
+/* ── LAYOUT ── */
+.layout { display:flex; flex:1; min-height:0; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width:var(--sidebar-w);
+  min-width:var(--sidebar-w);
+  background:var(--white);
+  border-right:1px solid var(--border);
+  padding:18px 0 24px;
+  position:sticky; top:var(--nav-height);
+  height:calc(100vh - var(--nav-height));
+  overflow-y:auto;
+  transition:transform 0.25s ease;
+  z-index:100;
+}
+.sidebar-section-label {
+  font-size:0.62rem; font-weight:800; text-transform:uppercase;
+  letter-spacing:1.2px; color:var(--muted);
+  padding:14px 18px 6px;
+}
+.sidebar-item {
+  display:flex; align-items:center; gap:9px;
+  padding:9px 18px;
+  color:#374151; font-size:0.83rem; font-weight:700;
+  cursor:pointer; text-decoration:none;
+  border-left:3px solid transparent;
+  transition:all 0.14s;
+  border-radius:0 8px 8px 0;
+  margin:1px 8px 1px 0;
+}
+.sidebar-item:hover, .sidebar-item.active {
+  background:var(--accent-light);
+  border-left-color:var(--accent);
+  color:var(--accent);
+}
+.sidebar-item .si { font-size:0.95rem; }
+
+/* ── CONTENT ── */
+.content {
+  flex:1;
+  padding:32px 32px 60px;
+  overflow-y:auto;
+  max-width:1200px;
+}
+
+/* ── SECTION ── */
+.section {
+  margin-bottom:32px;
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--card-radius);
+  padding:20px 22px 22px;
+  box-shadow:var(--shadow-sm);
+}
+.section-head {
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:18px;
+}
+.section-head h2 {
+  font-size:1rem; font-weight:800; color:var(--text);
+  white-space:nowrap;
+}
+.section-head-line { flex:1; height:1px; background:var(--border); }
+
+/* ── TILE GRID ── */
+.tile-grid {
+  display:flex; flex-wrap:wrap; gap:12px;
+}
+
+/* ── TILE ── */
+.tile {
+  display:flex; flex-direction:column; align-items:center;
+  width:90px; text-decoration:none; color:var(--text);
+  cursor:pointer; transition:transform 0.15s;
+}
+.tile:hover { transform:translateY(-4px); }
+.tile:hover .tile-icon { box-shadow:0 6px 18px rgba(0,0,0,0.18); }
+.tile-icon {
+  width:76px; height:76px;
+  border-radius:18px;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+  box-shadow:var(--shadow-sm);
+  margin-bottom:8px;
+  flex-shrink:0;
+  position:relative;
+  transition:box-shadow 0.15s;
+}
+.tile-icon img {
+  width:58%; height:58%;
+  object-fit:contain;
+}
+.tile-icon .fallback-letter {
+  font-size:1.7rem; font-weight:900; color:#fff;
+}
+.tile-label {
+  font-size:0.72rem; font-weight:700;
+  text-align:center; line-height:1.3;
+  max-width:86px; color:#4b5563;
+}
+
+/* ── QUICK LINKS BAR ── */
+.quick-bar {
+  display:flex; flex-wrap:wrap; gap:8px;
+}
+.quick-chip {
+  display:inline-flex; align-items:center; gap:7px;
+  background:#f8fafc;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:8px 14px;
+  font-size:0.79rem; font-weight:700;
+  text-decoration:none; color:#374151;
+  transition:all 0.14s;
+  box-shadow:var(--shadow-sm);
+}
+.quick-chip:hover { border-color:var(--accent); background:var(--accent-light); color:var(--accent); transform:translateY(-1px); }
+.quick-chip img { width:18px; height:18px; object-fit:contain; border-radius:4px; }
+
+/* ── HEART BUTTON ── */
+.tile { position: relative; }
+.heart-btn {
+  position:absolute; top:4px; right:4px;
+  background:rgba(255,255,255,0.92);
+  border:none; border-radius:50%;
+  width:22px; height:22px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:0.7rem;
+  opacity:0; transition:opacity 0.15s, transform 0.15s;
+  z-index:10; padding:0; line-height:1;
+  box-shadow:0 1px 4px rgba(0,0,0,0.18);
+}
+.tile:hover .heart-btn { opacity:1; }
+.heart-btn.hearted { opacity:1; }
+.heart-btn.hearted { color:#ef4444; }
+.heart-btn:not(.hearted) { color:#94a3b8; }
+.heart-btn:hover { transform:scale(1.2); }
+
+/* ── FAVORITES SECTION ── */
+#favorites-section {
+  background: linear-gradient(135deg, #eff6ff, #f0f9ff);
+  border: 1.5px solid #bfdbfe;
+}
+#favorites-section .section-head h2 { color: #1d4ed8; }
+#favorites-empty {
+  color:var(--muted); font-size:0.82rem;
+  padding:6px 0 2px; font-style:italic;
+}
+
+/* ── FOOTER ── */
+.site-footer {
+  text-align:center;
+  padding:18px 20px;
+  font-size:0.75rem;
+  color:var(--muted);
+  border-top:1px solid var(--border);
+  background:var(--white);
+  margin-top:auto;
+}
+.site-footer strong { color:#4169E1; font-weight:800; }
+
+.sidebar-overlay {
+  display:none;
+  position:fixed; inset:0; z-index:90;
+  background:rgba(0,0,0,0.4);
+}
+
+/* ════════════════════════════════
+   MOBILE  ≤ 768px
+════════════════════════════════ */
+@media(max-width:768px){
+  :root { --nav-height:54px; }
+
+  /* Nav */
+  .hamburger { display:block; }
+  .school-label { display:none; }
+  .nav-brand-name { display:none; }
+  .search-box { flex:1; min-width:0; }
+  .search-box input { width:100%; }
+
+  /* Sidebar slides in */
+  .sidebar {
+    position:fixed;
+    top:0; left:0;
+    height:100%;
+    transform:translateX(-100%);
+    box-shadow:4px 0 20px rgba(0,0,0,0.2);
+  }
+  .sidebar.open { transform:translateX(0); }
+  .sidebar-overlay.open { display:block; }
+
+  /* Content */
+  .content { padding:14px 12px 60px; }
+
+  /* Tiles smaller */
+  .tile { width:76px; }
+  .tile-icon { width:64px; height:64px; border-radius:14px; }
+  .tile-grid { gap:10px; }
+  .tile-label { font-size:0.68rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+  <div class="nav-brand">
+    <div class="logo-mark">L</div>
+    <span class="nav-brand-name">Learn<span>Deck</span></span>
+  </div>
+  <span class="school-label">Student Portal</span>
+  <div class="nav-spacer"></div>
+  <div class="search-box">
+    <svg width="13" height="13" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search-input" placeholder="Search tools...">
+  </div>
+
+</nav>
+
+<!-- Sidebar overlay (mobile) -->
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section-label">Navigation</div>
+    <a class="sidebar-item" href="#favorites" onclick="goTo('favorites')"><span class="si">❤️</span> Favorites</a>
+    <a class="sidebar-item active" href="#grades" onclick="goTo('grades')"><span class="si">📊</span> Grades & School</a>
+    <a class="sidebar-item" href="#study" onclick="goTo('study')"><span class="si">📚</span> Study Tools</a>
+    <a class="sidebar-item" href="#math" onclick="goTo('math')"><span class="si">🧮</span> Math</a>
+    <a class="sidebar-item" href="#science" onclick="goTo('science')"><span class="si">🔬</span> Science</a>
+    <a class="sidebar-item" href="#writing" onclick="goTo('writing')"><span class="si">✍️</span> Writing</a>
+    <a class="sidebar-item" href="#research" onclick="goTo('research')"><span class="si">🔎</span> Research</a>
+    <a class="sidebar-item" href="#coding" onclick="goTo('coding')"><span class="si">💻</span> Coding</a>
+    <a class="sidebar-item" href="#language" onclick="goTo('language')"><span class="si">🌍</span> Language</a>
+    <a class="sidebar-item" href="#creative" onclick="goTo('creative')"><span class="si">🎨</span> Creative</a>
+    <a class="sidebar-item" href="#google" onclick="goTo('google')"><span class="si">🔵</span> Google Apps</a>
+    <a class="sidebar-item" href="#video" onclick="goTo('video')"><span class="si">▶️</span> Video & Media</a>
+    <a class="sidebar-item" href="#lexia" onclick="goTo('lexia')"><span class="si">📖</span> Lexia</a>
+    <a class="sidebar-item" href="#renaissance" onclick="goTo('renaissance')"><span class="si">🌟</span> Renaissance</a>
+    <a class="sidebar-item" href="#games" onclick="goTo('games')"><span class="si">🎮</span> School Games</a>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content" id="main-content">
+
+    <!-- FAVORITES -->
+    <div id="favorites" class="section" id="favorites-section" style="background:linear-gradient(135deg,#eff6ff,#f0f9ff);border:1.5px solid #bfdbfe;">
+      <div class="section-head">
+        <h2 style="color:#1d4ed8;">❤️ Favorites</h2>
+        <div class="section-head-line"></div>
+      </div>
+      <div class="tile-grid" id="grid-favorites">
+        <span id="favorites-empty" style="color:#94a3b8;font-size:0.82rem;font-style:italic;padding:4px 0;">Heart any tool to pin it here!</span>
+      </div>
+    </div>
+
+    <!-- GRADES BANNER -->
+    <div id="grades" class="section">
+      <div class="section-head">
+        <h2>📊 Grades &amp; School Portal</h2>
+        <div class="section-head-line"></div>
+      </div>
+      <div class="tile-grid" id="grid-grades"></div>
+    </div>
+
+    <!-- QUICK ACCESS -->
+    <div class="section">
+      <div class="section-head">
+        <h2>⚡ Quick Access</h2>
+        <div class="section-head-line"></div>
+      </div>
+      <div class="quick-bar" id="quick-bar"></div>
+    </div>
+
+    <!-- STUDY -->
+    <div id="study" class="section">
+      <div class="section-head"><h2>📚 Study Tools</h2><div class="section-head-line"></div></div>
+      <div class="tile-grid" id="grid-study"></div>
+    </div>
+
+    <!-- MATH -->
+    <div id="math" class="section">
+      <div class="section-head"><h2>🧮 Math</h2><div class="section-head-line"></div></div>
+      <div class="tile-grid" id="grid-math"></div>
+    </div>
+
+    <!-- SCIENCE -->
+    <div id="science" class="section">
+      <div class="section-head"><h2>🔬 Science</h2><div class="section-head-line"></div></div>
+      <div class="tile-grid" id="grid-science"></div>
+    </div>
+
+    <!-- WRITING -->
+    <div id="writing" class="section">
+      <div class="section-head"><h2>✍️ Writing &amp; Grammar</h2><div class="section-head-line"></div></div>
+      <div class="tile-grid" id="grid-writing"></div>
+    </div>
+
+    <!-- RESEARCH -->
+    <div id="research" class="section">
+      <div class="section-head"><h2>🔎 Research</h2><div class="section-head-line"></div></div>
+      <div class="tile-grid" id="grid-research"></div>
+    </div>
+
+    <!-- CODING -->
+    <div id="coding" class="section">
+      <div class="section-head"><h2>💻 Coding &amp; Tech</h2><div class="section-head-line"></div></div>
+      <div class="tile-grid" id="grid-coding"></div>
+    </div>
+
+    <!-- LANGUAGE -->
+    <div id="language" class="section">
+      <div class="section-head"><h2>🌍 Language</h2><div class="section-head-line"></div></div>
+      <div class="tile-grid" id="grid-language"></div>
+    </div>
+
+    <!-- CREATIVE -->
+    <div id="creative" class="section">
+      <div class="section-head"><h2>🎨 Creative &amp; Design</h2><div class="section-head-line"></div></div>
+      <div class="tile-grid" id="grid-creative"></div>
+    </div>
+
+    <!-- GOOGLE APPS -->
+    <div id="google" class="section">
+      <div class="section-head"><h2>Google Apps</h2><div class="section-head-line"></div></div>
+      <div class="tile-grid" id="grid-google"></div>
+    </div>
+
+    <!-- LEXIA -->
+    <div id="lexia" class="section">
+      <div class="section-head"><h2>📖 Lexia</h2><div class="section-head-line"></div></div>
+      <div class="tile-grid" id="grid-lexia"></div>
+    </div>
+
+    <!-- RENAISSANCE -->
+    <div id="renaissance" class="section">
+      <div class="section-head"><h2>🌟 Renaissance</h2><div class="section-head-line"></div></div>
+      <div class="tile-grid" id="grid-renaissance"></div>
+    </div>
+
+    <!-- SCHOOL GAMES -->
+    <div id="games" class="section">
+      <div class="section-head"><h2>🎮 School Games</h2><div class="section-head-line"></div></div>
+      <div class="tile-grid" id="grid-games"></div>
+    </div>
+
+    <!-- VIDEO -->
+    <div id="video" class="section">
+      <div class="section-head"><h2>▶️ Video &amp; Media</h2><div class="section-head-line"></div></div>
+      <div class="tile-grid" id="grid-video"></div>
+    </div>
+
+    <div id="no-results" style="display:none;text-align:center;padding:40px;color:#64748b;font-size:1rem;">
+      🔍 No results found. Try a different search!
+    </div>
+
+  </main>
+</div>
+
+<footer class="site-footer">
+  © 2026 <strong>Talona14Studios</strong> &amp; Claude &nbsp;·&nbsp; LearnDeck
+</footer>
+
+<script>
+// ── APP DATA ──
+const APPS = {
+  grades: [
+    { name:'PowerSchool', domain:'powerschool.com', bg:'#c0392b', url:'https://www.powerschool.com/find-your-school/', label:'Check Grades' },
+    { name:'Clever', domain:'clever.com', bg:'#1565c0', url:'https://clever.com/in/school', label:'Clever Portal' },
+    { name:'Schoology', domain:'schoology.com', bg:'#1a73e8', url:'https://www.schoology.com', label:'Schoology LMS' },
+    { name:'Canvas', domain:'canvas.instructure.com', bg:'#e66000', url:'https://canvas.instructure.com', label:'Canvas LMS' },
+    { name:'Google Classroom', domain:'classroom.google.com', bg:'#1e8e3e', url:'https://classroom.google.com', label:'Google Classroom' },
+    { name:'Remind', domain:'remind.com', bg:'#0057b8', url:'https://www.remind.com', label:'Remind' },
+    { name:'ClassDojo', domain:'classdojo.com', bg:'#2dc653', url:'https://www.classdojo.com', label:'ClassDojo' },
+    { name:'Wayground', domain:'wayground.com', bg:'#7c3aed', url:'https://wayground.com', label:'Wayground' },
+  ],
+  quick: [
+    { name:'Google', domain:'google.com', url:'https://www.google.com' },
+    { name:'Google Translate', domain:'translate.google.com', url:'https://translate.google.com' },
+    { name:'Wolfram Alpha', domain:'wolframalpha.com', url:'https://www.wolframalpha.com' },
+    { name:'Desmos', domain:'desmos.com', url:'https://www.desmos.com/calculator' },
+    { name:'Grammarly', domain:'grammarly.com', url:'https://app.grammarly.com' },
+    { name:'Wikipedia', domain:'wikipedia.org', url:'https://www.wikipedia.org' },
+    { name:'Dictionary', domain:'dictionary.com', url:'https://www.dictionary.com' },
+    { name:'YouTube', domain:'youtube.com', url:'https://www.youtube.com' },
+  ],
+  study: [
+    { name:'Khan Academy', domain:'khanacademy.org', bg:'#14a800', url:'https://www.khanacademy.org' },
+    { name:'Quizlet', domain:'quizlet.com', bg:'#4257b2', url:'https://quizlet.com' },
+    { name:'Anki Web', domain:'ankiweb.net', bg:'#0075c1', url:'https://ankiweb.net' },
+    { name:'CrashCourse', domain:'thecrashcourse.com', bg:'#2d2d2d', url:'https://thecrashcourse.com' },
+    { name:'Coursera', domain:'coursera.org', bg:'#0056d2', url:'https://www.coursera.org' },
+    { name:'SparkNotes', domain:'sparknotes.com', bg:'#f4a127', url:'https://www.sparknotes.com' },
+    { name:'Brainly', domain:'brainly.com', bg:'#7c4dff', url:'https://brainly.com' },
+    { name:'Socratic', domain:'socratic.org', bg:'#4285f4', url:'https://socratic.org' },
+    { name:'Shmoop', domain:'shmoop.com', bg:'#e63946', url:'https://www.shmoop.com' },
+    { name:'StudyBlue', domain:'studyblue.com', bg:'#1565c0', url:'https://www.studyblue.com' },
+  ],
+  math: [
+    { name:'Desmos', domain:'desmos.com', bg:'#2a6ebb', url:'https://www.desmos.com/calculator' },
+    { name:'Wolfram Alpha', domain:'wolframalpha.com', bg:'#e5132d', url:'https://www.wolframalpha.com' },
+    { name:'GeoGebra', domain:'geogebra.org', bg:'#8abf2e', url:'https://www.geogebra.org' },
+    { name:'Mathway', domain:'mathway.com', bg:'#6236ff', url:'https://www.mathway.com' },
+    { name:'Calculator.net', domain:'calculator.net', bg:'#0b6fcc', url:'https://www.calculator.net' },
+    { name:'Math is Fun', domain:'mathsisfun.com', bg:'#ff6600', url:'https://www.mathsisfun.com' },
+    { name:'Photomath', domain:'photomath.com', bg:'#44c97d', url:'https://photomath.com' },
+  ],
+  science: [
+    { name:'PhET Sims', domain:'phet.colorado.edu', bg:'#2e7d32', url:'https://phet.colorado.edu' },
+    { name:'Periodic Table', domain:'ptable.com', bg:'#37474f', url:'https://ptable.com' },
+    { name:'NASA', domain:'nasa.gov', bg:'#0b3d91', url:'https://www.nasa.gov' },
+    { name:'Biology Online', domain:'biologyonline.com', bg:'#388e3c', url:'https://www.biologyonline.com' },
+    { name:'National Geo', domain:'nationalgeographic.com', bg:'#f9a825', url:'https://www.nationalgeographic.com' },
+    { name:'Science News', domain:'sciencenews.org', bg:'#c0392b', url:'https://www.sciencenews.org' },
+    { name:'Visible Body', domain:'visiblebody.com', bg:'#e91e63', url:'https://www.visiblebody.com' },
+  ],
+  writing: [
+    { name:'Grammarly', domain:'grammarly.com', bg:'#15c39a', url:'https://app.grammarly.com' },
+    { name:'Hemingway', domain:'hemingwayapp.com', bg:'#e74c3c', url:'https://hemingwayapp.com' },
+    { name:'Thesaurus', domain:'thesaurus.com', bg:'#e67e22', url:'https://www.thesaurus.com' },
+    { name:'Dictionary', domain:'dictionary.com', bg:'#2980b9', url:'https://www.dictionary.com' },
+    { name:'Cite This 4 Me', domain:'citethisforme.com', bg:'#8e44ad', url:'https://www.citethisforme.com' },
+    { name:'Power Thes.', domain:'powerthesaurus.org', bg:'#16a085', url:'https://www.powerthesaurus.org' },
+    { name:'Purdue OWL', domain:'owl.purdue.edu', bg:'#c28b00', url:'https://owl.purdue.edu' },
+    { name:'EasyBib', domain:'easybib.com', bg:'#2563eb', url:'https://www.easybib.com' },
+  ],
+  research: [
+    { name:'Wikipedia', domain:'wikipedia.org', bg:'#3d3d3d', url:'https://www.wikipedia.org' },
+    { name:'Google Scholar', domain:'scholar.google.com', bg:'#4285f4', url:'https://scholar.google.com' },
+    { name:'Project Gutenberg', domain:'gutenberg.org', bg:'#8b4513', url:'https://www.gutenberg.org' },
+    { name:'Internet Archive', domain:'archive.org', bg:'#4a4a4a', url:'https://archive.org' },
+    { name:'Britannica', domain:'britannica.com', bg:'#003087', url:'https://www.britannica.com' },
+    { name:'JSTOR', domain:'jstor.org', bg:'#6b4f3a', url:'https://www.jstor.org' },
+  ],
+  coding: [
+    { name:'Replit', domain:'replit.com', bg:'#0d101e', url:'https://replit.com' },
+    { name:'Scratch', domain:'scratch.mit.edu', bg:'#ff8c1a', url:'https://scratch.mit.edu' },
+    { name:'Code.org', domain:'code.org', bg:'#f9a825', url:'https://code.org' },
+    { name:'freeCodeCamp', domain:'freecodecamp.org', bg:'#0a0a23', url:'https://www.freecodecamp.org' },
+    { name:'W3Schools', domain:'w3schools.com', bg:'#04aa6d', url:'https://www.w3schools.com' },
+    { name:'Codecademy', domain:'codecademy.com', bg:'#1f4056', url:'https://www.codecademy.com' },
+    { name:'CS50 Harvard', domain:'cs50.harvard.edu', bg:'#a51c30', url:'https://cs50.harvard.edu' },
+    { name:'MIT OpenCW', domain:'ocw.mit.edu', bg:'#8c001a', url:'https://ocw.mit.edu' },
+  ],
+  language: [
+    { name:'Duolingo', domain:'duolingo.com', bg:'#58cc02', url:'https://www.duolingo.com' },
+    { name:'Google Translate', domain:'translate.google.com', bg:'#4285f4', url:'https://translate.google.com' },
+    { name:'Etymonline', domain:'etymonline.com', bg:'#5d4037', url:'https://www.etymonline.com' },
+    { name:'SpanishDict', domain:'spanishdict.com', bg:'#0072c6', url:'https://www.spanishdict.com' },
+    { name:'Forvo', domain:'forvo.com', bg:'#e74c3c', url:'https://forvo.com' },
+    { name:'Babbel', domain:'babbel.com', bg:'#5a7b00', url:'https://www.babbel.com' },
+  ],
+  creative: [
+    { name:'Canva', domain:'canva.com', bg:'#00c4cc', url:'https://www.canva.com' },
+    { name:'Unsplash', domain:'unsplash.com', bg:'#111111', url:'https://unsplash.com' },
+    { name:'Adobe Express', domain:'adobe.com', bg:'#ff0000', url:'https://www.adobe.com/express' },
+    { name:'Pixlr', domain:'pixlr.com', bg:'#00aaff', url:'https://pixlr.com' },
+    { name:'AutoDraw', domain:'autodraw.com', bg:'#4285f4', url:'https://www.autodraw.com' },
+    { name:'Flat.io', domain:'flat.io', bg:'#f72585', url:'https://flat.io' },
+  ],
+  google: [
+    { name:'Google Docs', domain:'docs.google.com', bg:'#1a73e8', url:'https://docs.google.com' },
+    { name:'Google Slides', domain:'slides.google.com', bg:'#f4b400', url:'https://slides.google.com' },
+    { name:'Google Sheets', domain:'sheets.google.com', bg:'#0f9d58', url:'https://sheets.google.com' },
+    { name:'Google Drive', domain:'drive.google.com', bg:'#1a73e8', url:'https://drive.google.com' },
+    { name:'Google Calendar', domain:'calendar.google.com', bg:'#1a73e8', url:'https://calendar.google.com' },
+    { name:'Google Forms', domain:'forms.google.com', bg:'#7248b9', url:'https://forms.google.com' },
+    { name:'Google Meet', domain:'meet.google.com', bg:'#00897b', url:'https://meet.google.com' },
+    { name:'Google Sites', domain:'sites.google.com', bg:'#1a73e8', url:'https://sites.google.com' },
+  ],
+  video: [
+    { name:'YouTube', domain:'youtube.com', bg:'#ff0000', url:'https://www.youtube.com' },
+    { name:'YouTube Edu', domain:'youtube.com', bg:'#cc0000', url:'https://www.youtube.com/education' },
+    { name:'PBS LearningMedia', domain:'pbslearningmedia.org', bg:'#1565c0', url:'https://pbslearningmedia.org' },
+    { name:'TED Ed', domain:'ed.ted.com', bg:'#e62b1e', url:'https://ed.ted.com' },
+    { name:'CrashCourse', domain:'thecrashcourse.com', bg:'#2d2d2d', url:'https://thecrashcourse.com' },
+    { name:'National Geo', domain:'nationalgeographic.com', bg:'#f9a825', url:'https://www.nationalgeographic.com' },
+  ],
+  games: [
+    { name:'Boddle', domain:'boddlelearning.com', bg:'#ff6b35', url:'https://www.boddlelearning.com', label:'Boddle' },
+    { name:'Prodigy', domain:'prodigygame.com', bg:'#7b2d8b', url:'https://www.prodigygame.com', label:'Prodigy Math' },
+    { name:'My ADA Math', domain:'myadamath.com', bg:'#0066cc', url:'https://www.myadamath.com', label:'My ADA Math' },
+    { name:'LinkIt', domain:'linkit.com', bg:'#e63946', url:'https://www.linkit.com', label:'LinkIt' },
+    { name:'99math', domain:'99math.com', bg:'#1b998b', url:'https://99math.com', label:'99math' },
+    { name:'Minga', domain:'minga.io', bg:'#5c4de5', url:'https://minga.io', label:'Minga' },
+    { name:'Skill Struck', domain:'skillstruck.com', bg:'#f97316', url:'https://www.skillstruck.com', label:'Skill Struck' },
+  ],
+  lexia: [
+    { name:'Lexia Core5', domain:'lexialearning.com', bg:'#0047ab', url:'https://www.lexialearning.com/core5', label:'Lexia Core5' },
+    { name:'Lexia PowerUp', domain:'lexialearning.com', bg:'#1565c0', url:'https://www.lexialearning.com/powerup', label:'PowerUp Literacy' },
+    { name:'Lexia English', domain:'lexialearning.com', bg:'#1976d2', url:'https://www.lexialearning.com/lexia-english', label:'Lexia English' },
+    { name:'Lexia RAPID', domain:'lexialearning.com', bg:'#0d47a1', url:'https://www.lexialearning.com/rapid', label:'RAPID Assessment' },
+  ],
+  renaissance: [
+    { name:'myON', domain:'myon.com', bg:'#e53935', url:'https://www.myon.com', label:'myON Reading' },
+    { name:'Accelerated Reader', domain:'renaissance.com', bg:'#1b5e20', url:'https://www.renaissance.com/products/accelerated-reader/', label:'Accelerated Reader' },
+    { name:'Star Reading', domain:'renaissance.com', bg:'#2e7d32', url:'https://www.renaissance.com/products/star-reading/', label:'Star Reading' },
+    { name:'Star Math', domain:'renaissance.com', bg:'#1565c0', url:'https://www.renaissance.com/products/star-math/', label:'Star Math' },
+    { name:'Star Early Lit', domain:'renaissance.com', bg:'#6a1b9a', url:'https://www.renaissance.com/products/star-early-literacy/', label:'Star Early Lit' },
+    { name:'Freckle', domain:'freckle.com', bg:'#f57c00', url:'https://www.freckle.com', label:'Freckle' },
+    { name:'Lalilo', domain:'lalilo.com', bg:'#00897b', url:'https://www.lalilo.com', label:'Lalilo' },
+  ],
+  oklahoma: [],
+  california: [],
+  florida: [],
+};
+
+// ── COOKIES ──
+function setCookie(name, value, days){
+  const d = new Date(); d.setTime(d.getTime() + days*24*60*60*1000);
+  document.cookie = `${name}=${encodeURIComponent(value)};expires=${d.toUTCString()};path=/`;
+}
+function getCookie(name){
+  const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+function getFavorites(){
+  try { return JSON.parse(getCookie('sh_favorites') || '[]'); } catch{ return []; }
+}
+function saveFavorites(arr){
+  setCookie('sh_favorites', JSON.stringify(arr), 365);
+}
+
+// ── FAVICON URL ──
+function fav(domain){
+  return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+}
+
+// ── BUILD TILE ──
+function makeTile(app, inFavGrid){
+  const a = document.createElement('a');
+  a.href = app.url; a.target='_blank'; a.rel='noopener noreferrer';
+  a.className='tile';
+  a.dataset.name = (app.name + ' ' + (app.label||'')).toLowerCase();
+  a.dataset.key = app.name;
+
+  const icon = document.createElement('div');
+  icon.className='tile-icon';
+  icon.style.background = app.bg || '#374151';
+
+  const img = document.createElement('img');
+  img.src = fav(app.domain);
+  img.alt = app.name;
+  img.onerror = () => {
+    img.remove();
+    const l = document.createElement('span');
+    l.className='fallback-letter';
+    l.textContent = app.name[0];
+    icon.appendChild(l);
+  };
+  icon.appendChild(img);
+
+  const lbl = document.createElement('div');
+  lbl.className='tile-label';
+  lbl.textContent = app.label || app.name;
+
+  // Heart button
+  const hBtn = document.createElement('button');
+  hBtn.className = 'heart-btn';
+  hBtn.title = 'Add to Favorites';
+  const favs = getFavorites();
+  const isHearted = favs.some(f => f.name === app.name);
+  hBtn.classList.toggle('hearted', isHearted);
+  hBtn.textContent = '♥';
+  hBtn.addEventListener('click', (e) => {
+    e.preventDefault(); e.stopPropagation();
+    let favs = getFavorites();
+    const idx = favs.findIndex(f => f.name === app.name);
+    if(idx === -1){
+      favs.push(app);
+      hBtn.classList.add('hearted');
+    } else {
+      favs.splice(idx, 1);
+      hBtn.classList.remove('hearted');
+      // Also remove from fav grid if in it
+      if(inFavGrid){ a.remove(); }
+      // Sync heart on main grid
+      document.querySelectorAll(`.tile[data-key="${app.name}"] .heart-btn`).forEach(b => b.classList.remove('hearted'));
+    }
+    saveFavorites(favs);
+    renderFavorites();
+  });
+  icon.appendChild(hBtn);
+
+  a.appendChild(icon); a.appendChild(lbl);
+  return a;
+}
+
+// ── RENDER FAVORITES ──
+function renderFavorites(){
+  const grid = document.getElementById('grid-favorites');
+  const empty = document.getElementById('favorites-empty');
+  // Remove existing fav tiles (not the empty msg)
+  grid.querySelectorAll('.tile').forEach(t => t.remove());
+  const favs = getFavorites();
+  if(favs.length === 0){
+    empty.style.display = '';
+  } else {
+    empty.style.display = 'none';
+    favs.forEach(app => grid.appendChild(makeTile(app, true)));
+  }
+}
+
+// ── BUILD QUICK CHIP ──
+function makeChip(app){
+  const a = document.createElement('a');
+  a.href = app.url; a.target='_blank'; a.rel='noopener noreferrer';
+  a.className='quick-chip';
+  a.dataset.name = app.name.toLowerCase();
+
+  const img = document.createElement('img');
+  img.src = fav(app.domain);
+  img.alt = app.name;
+  img.onerror = () => { img.style.display='none'; };
+
+  const span = document.createElement('span');
+  span.textContent = app.name;
+
+  a.appendChild(img); a.appendChild(span);
+  return a;
+}
+
+// ── RENDER ALL ──
+function render(){
+  // Favorites (from cookies)
+  renderFavorites();
+
+  // Grades
+  const gGrid = document.getElementById('grid-grades');
+  APPS.grades.forEach(app => gGrid.appendChild(makeTile(app)));
+
+  // Quick
+  const qBar = document.getElementById('quick-bar');
+  APPS.quick.forEach(app => qBar.appendChild(makeChip(app)));
+
+  // Regular grids
+  const map = {study:'grid-study',math:'grid-math',science:'grid-science',
+    writing:'grid-writing',research:'grid-research',coding:'grid-coding',
+    language:'grid-language',creative:'grid-creative',google:'grid-google',
+    video:'grid-video',lexia:'grid-lexia',renaissance:'grid-renaissance',games:'grid-games'};
+
+  Object.entries(map).forEach(([key, id]) => {
+    const el = document.getElementById(id);
+    if (!el || !APPS[key]) return;
+    APPS[key].forEach(app => el.appendChild(makeTile(app)));
+  });
+}
+
+render();
+
+// ── SEARCH ──
+document.getElementById('search-input').addEventListener('input', function(){
+  const q = this.value.toLowerCase().trim();
+  let anyVisible = false;
+
+  document.querySelectorAll('.tile').forEach(el => {
+    const match = !q || (el.dataset.name || '').includes(q);
+    el.style.display = match ? 'flex' : 'none';
+    if(match) anyVisible = true;
+  });
+  document.querySelectorAll('.quick-chip').forEach(el => {
+    el.style.display = (!q || (el.dataset.name||'').includes(q)) ? '' : 'none';
+  });
+
+  // hide/show sections
+  document.querySelectorAll('.section').forEach(sec => {
+    if(!q){ sec.style.display=''; return; }
+    const tiles = sec.querySelectorAll('.tile');
+    if(!tiles.length){ sec.style.display=''; return; }
+    const any = [...tiles].some(t => t.style.display !== 'none');
+    sec.style.display = any ? '' : 'none';
+  });
+
+  document.getElementById('no-results').style.display = (q && !anyVisible) ? 'block' : 'none';
+});
+
+// ── SIDEBAR ──
+function toggleSidebar(){
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('overlay');
+  sb.classList.toggle('open');
+  ov.classList.toggle('open');
+}
+
+function goTo(id){
+  const el = document.getElementById(id);
+  if(el){ el.scrollIntoView({behavior:'smooth', block:'start'}); }
+  // Close sidebar on mobile
+  if(window.innerWidth <= 768) toggleSidebar();
+}
+
+// ── ACTIVE SIDEBAR ON SCROLL ──
+const content = document.getElementById('main-content');
+const sidebarLinks = document.querySelectorAll('.sidebar-item');
+content.addEventListener('scroll', () => {
+  const scrollTop = content.scrollTop + 80;
+  let current = '';
+  document.querySelectorAll('.section[id]').forEach(s => {
+    if(s.offsetTop <= scrollTop) current = s.id;
+  });
+  sidebarLinks.forEach(l => {
+    l.classList.toggle('active', l.getAttribute('href') === '#' + current);
+  });
+});
+</script>
+</body>
+</html>
